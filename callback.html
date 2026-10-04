@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Signed in · Uncanny Karaoke</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header><div class="logo">🎤</div><h1>Almost connected</h1></header>
+  <p>Copy this page's full address and paste it into the terminal where you ran
+  <code>python -m autopilot connect …</code>.</p>
+  <span class="url" id="url"></span>
+  <button id="copy">Copy the address</button>
+  <p class="muted" id="done"></p>
+  <p class="muted">This page doesn't send the address anywhere: it's only shown to you.</p>
+</main>
+<script>
+  const url = location.href;
+  document.getElementById("url").textContent = url;
+  document.getElementById("copy").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      document.getElementById("done").textContent = "Copied. Now paste it into the terminal.";
+    } catch {
+      document.getElementById("done").textContent = "Couldn't copy automatically: select the address above and copy it.";
+    }
+  };
+  if (!/[?&]code=/.test(url)) {
+    document.getElementById("done").textContent = "There's no sign-in code in this address: start again with `connect`.";
+  }
+</script>
+</body>
+</html>
