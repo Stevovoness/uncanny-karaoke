@@ -19,6 +19,19 @@
   <p class="muted">This page doesn't send the address anywhere: it's only shown to you.</p>
 </main>
 <script>
+  // A sign-in started from the studio (its Connect button) carries the studio's address in `state` after a "~":
+  // send the browser straight back there to finish. One started in the terminal has none: copy and paste below.
+  (() => {
+    const q = new URLSearchParams(location.search), state = q.get("state") || "";
+    if (!q.get("code") || !state.includes("~")) return;
+    try {
+      const b64 = state.split("~")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const back = new URL(atob(b64 + "=".repeat((4 - b64.length % 4) % 4)));
+      if (back.protocol !== "https:" || !back.hostname.endsWith(".ts.net")) return;   // only our private studio
+      document.querySelector("h1").textContent = "Finishing the sign-in…";
+      location.replace(back.origin + "/oauth/callback" + location.search);
+    } catch { /* not ours: show the address to copy */ }
+  })();
   const url = location.href;
   document.getElementById("url").textContent = url;
   document.getElementById("copy").onclick = async () => {
